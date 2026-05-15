@@ -2,45 +2,37 @@ import React, { useEffect, useState } from 'react';
 
 const Teams = () => {
   const [teams, setTeams] = useState([]);
-  const endpoint = `${process.env.REACT_APP_CODESPACE_URL}/api/teams/`;
+  const codespace = process.env.REACT_APP_CODESPACE_NAME;
+  const endpoint = `https://${codespace}-8000.app.github.dev/api/teams/`;
 
   useEffect(() => {
-    console.log('Fetching Teams from:', endpoint);
     fetch(endpoint)
       .then(res => res.json())
       .then(data => {
-        const results = data.results || data;
-        setTeams(results);
-        console.log('Fetched Teams:', results);
-      })
-      .catch(err => console.error('Error fetching teams:', err));
+        console.log('Teams API:', endpoint);
+        console.log('Teams data:', data);
+        setTeams(data.results || data);
+      });
   }, [endpoint]);
 
   return (
-    <div className="card mb-4">
-      <div className="card-body">
-        <h2 className="card-title mb-4 text-info">Teams</h2>
-        <div className="table-responsive">
-          <table className="table table-striped table-bordered align-middle">
-            <thead className="table-light">
-              <tr>
-                <th>#</th>
-                <th>Name</th>
-                <th>Members</th>
-              </tr>
-            </thead>
-            <tbody>
-              {teams.map((team, idx) => (
-                <tr key={team.id || idx}>
-                  <td>{team.id || idx + 1}</td>
-                  <td>{team.name || '-'}</td>
-                  <td>{Array.isArray(team.members) ? team.members.length : '-'}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+    <div className="container">
+      <h2 className="mt-4 mb-4 display-6">Teams</h2>
+      <table className="table table-striped table-bordered">
+        <thead className="table-dark">
+          <tr>
+            <th>Team Name</th>
+          </tr>
+        </thead>
+        <tbody>
+          {teams.map((team, idx) => (
+            <tr key={idx}>
+              <td>{team.name}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <button className="btn btn-primary mt-3" onClick={()=>window.location.reload()}>Reload</button>
     </div>
   );
 };

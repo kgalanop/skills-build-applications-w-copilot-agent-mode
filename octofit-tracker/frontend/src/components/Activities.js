@@ -2,45 +2,41 @@ import React, { useEffect, useState } from 'react';
 
 const Activities = () => {
   const [activities, setActivities] = useState([]);
-  const endpoint = `${process.env.REACT_APP_CODESPACE_URL}/api/activities/`;
+  const codespace = process.env.REACT_APP_CODESPACE_NAME;
+  const endpoint = `https://${codespace}-8000.app.github.dev/api/activities/`;
 
   useEffect(() => {
-    console.log('Fetching Activities from:', endpoint);
     fetch(endpoint)
       .then(res => res.json())
       .then(data => {
-        const results = data.results || data;
-        setActivities(results);
-        console.log('Fetched Activities:', results);
-      })
-      .catch(err => console.error('Error fetching activities:', err));
+        console.log('Activities API:', endpoint);
+        console.log('Activities data:', data);
+        setActivities(data.results || data);
+      });
   }, [endpoint]);
 
   return (
-    <div className="card mb-4">
-      <div className="card-body">
-        <h2 className="card-title mb-4 text-primary">Activities</h2>
-        <div className="table-responsive">
-          <table className="table table-striped table-bordered align-middle">
-            <thead className="table-light">
-              <tr>
-                <th>#</th>
-                <th>Name</th>
-                <th>Description</th>
-              </tr>
-            </thead>
-            <tbody>
-              {activities.map((activity, idx) => (
-                <tr key={activity.id || idx}>
-                  <td>{activity.id || idx + 1}</td>
-                  <td>{activity.name || '-'}</td>
-                  <td>{activity.description || '-'}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+    <div className="container">
+      <h2 className="mt-4 mb-4 display-6">Activities</h2>
+      <table className="table table-striped table-bordered">
+        <thead className="table-dark">
+          <tr>
+            <th>User</th>
+            <th>Type</th>
+            <th>Duration (min)</th>
+          </tr>
+        </thead>
+        <tbody>
+          {activities.map((activity, idx) => (
+            <tr key={idx}>
+              <td>{activity.user}</td>
+              <td>{activity.type}</td>
+              <td>{activity.duration}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <button className="btn btn-primary mt-3" onClick={()=>window.location.reload()}>Reload</button>
     </div>
   );
 };
